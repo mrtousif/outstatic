@@ -24,7 +24,15 @@ export function getDocumentBySlug(
     const realSlug = slug.replace(MD_MDX_REGEXP, '')
     const collectionsPath = join(CONTENT_PATH, collection)
     const fullPath = join(collectionsPath, `${realSlug}.md`)
-    const fileContents = fs.readFileSync(fullPath, 'utf8')
+    let fileContents: string
+
+    // check if .md file exists, if not, get .mdx
+    if (fs.existsSync(fullPath)) {
+      fileContents = fs.readFileSync(fullPath, 'utf8')
+    } else {
+      fileContents = fs.readFileSync(`${fullPath}x`, 'utf8')
+    }
+
     const { data, content } = matter(fileContents)
 
     type Items = {
