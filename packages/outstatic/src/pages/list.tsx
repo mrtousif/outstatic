@@ -8,6 +8,7 @@ import { OutstaticContext } from '../context'
 import { useDocumentsQuery } from '../graphql/generated'
 import { Document } from '../types'
 import { ostSignOut } from '../utils/auth/hooks'
+import { MD_MDX_REGEXP } from '../utils/server'
 
 type GQLErrorExtended = GraphQLError & { type: string }
 
@@ -54,7 +55,8 @@ export default function List({ collection }: ListProps) {
 
   if (entries) {
     entries.forEach((document) => {
-      if (document.name.slice(-3) === '.md') {
+      // regex check if word ends with .md or .mdx
+      if (document?.name?.match(/\.mdx?$/)) {
         const {
           data: { title, publishedAt, status, author }
         } = matter(
@@ -66,7 +68,7 @@ export default function List({ collection }: ListProps) {
           title,
           status,
           publishedAt: publishedAt ? new Date(publishedAt) : new Date(),
-          slug: document.name.replace('.md', ''),
+          slug: document.name.replace(MD_MDX_REGEXP, ''),
           author
         })
       }
